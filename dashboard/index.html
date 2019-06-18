@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>E-Team Real Time</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/epoch/0.8.4/css/epoch.min.css"
+        integrity="sha256-7Gigjgci9s9U+mXDEimBIp0+p2VICCmW4A3BLG2rbOg="
+        crossorigin="anonymous" />
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.6/mithril.min.js"
+        integrity="sha256-P9jgl8BwiS6Vj1m0ihcRW2xscW6uoC9cE4AUkongyuY="
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"
+        integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/epoch/0.8.4/js/epoch.min.js"
+        integrity="sha256-uKluQW6PgYqUnbaF80MDXVMg5/U2Jkl+mIX2qliGmJc="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.5/all/gauge.min.js"></script> 
+
+    <script>
+    var ws;
+    var event_id = 21430;
+
+    var gauges = {
+        'rpm': {
+            gauge: null,
+            config: {
+                renderTo: 'rpm',
+                width: 250,
+                height: 250,
+                units: 'x1000',
+                title: 'RPM',
+                value: 0,
+                minValue: 0,
+                maxValue: 15000,
+                majorTicks: [
+                    '0','1','2','3','4','5','6','7','8','9','10','11', '12', '14', '15'
+                ],
+                minorTicks: 2,
+                strokeTicks: true,
+                highlights: [
+                    { from: 10500, to: 14000, color: 'green' },
+                    { from: 14000, to: 15000, color: 'red' }
+                ],
+                colorPlate: '#222',
+                colorMajorTicks: '#f5f5f5',
+                colorMinorTicks: '#ddd',
+                colorTitle: '#fff',
+                colorUnits: '#ccc',
+                colorNumbers: '#eee',
+                colorNeedle: 'red',
+                colorNeedleEnd: 'red',
+                valueBox: true,
+                animationRule: 'bounce',
+                animationDuration: 500
+            }
+        },
+        'speed': {
+            gauge:null,
+            config: {
+                renderTo: 'speed',
+                width: 250,
+                height: 250,
+                units: 'Km/h',
+                title: 'Speed',
+                value: 0,
+                minValue: 0,
+                maxValue: 220,
+                majorTicks: [
+                    '0','20','40','60','80','100','120','140','160','180','200','220'
+                ],
+                minorTicks: 2,
+                strokeTicks: true,
+                highlights: [
+                    { from: 0, to: 50, color: 'rgba(0,255,0,.15)' },
+                    { from: 50, to: 100, color: 'rgba(255,255,0,.15)' },
+                    { from: 100, to: 150, color: 'rgba(255,30,0,.25)' },
+                    { from: 150, to: 200, color: 'rgba(255,0,225,.25)' },
+                    { from: 200, to: 220, color: 'rgba(0,0,255,.25)' }
+                ],
+                colorPlate: '#222',
+                colorMajorTicks: '#f5f5f5',
+                colorMinorTicks: '#ddd',
+                colorTitle: '#fff',
+                colorUnits: '#ccc',
+                colorNumbers: '#eee',
+                colorNeedle: 'rgba(240, 128, 128, 1)',
+                colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+                valueBox: true,
+                animationRule: 'bounce',
+                animationDuration: 500
+            }
+        },
+        'temp': {
+            gauge:null,
+            config: {
+                renderTo: 'temp',
+                width: 250,
+                height: 250,
+                units: '°C',
+                title: 'Water Temp',
+                value: 0,
+                minValue: 0,
+                maxValue: 250,
+                majorTicks: [
+                    '0','20','40','60','80','100','120','140','160','180','200','220', '240', '250'
+                ],
+                minorTicks: 2,
+                strokeTicks: true,
+                highlights: [
+                    { from: 0, to: 50, color: 'blue' },
+                    { from: 50, to: 100, color: 'rgba(0,0,255,.25)' },
+                    { from: 100, to: 180, color: 'rgba(255,30,0,.25)' },
+                    { from: 180, to: 250, color: 'red' },
+                ],
+                colorPlate: '#222',
+                colorMajorTicks: '#f5f5f5',
+                colorMinorTicks: '#ddd',
+                colorTitle: '#fff',
+                colorUnits: '#ccc',
+                colorNumbers: '#eee',
+                colorNeedle: 'red',
+                colorNeedleEnd: 'red',
+                valueBox: true,
+                animationRule: 'bounce',
+                animationDuration: 500
+            }
+        },
+    }
+
+    var charts = {
+        "rpm": null,
+        "battery": null
+    }
+
+    function connect_podium() {
+        if(ws !== undefined && ws.readyState !== ws.CLOSED){
+            console.log("connection already done")
+            return
+        }
+        ws = new WebSocket("wss://telemetry.podium.live/")
+
+        ws.onopen = function(event){
+            console.log('ok');
+            ws.send('{"type":"register","address":"telemetryStreamStarted"}')
+            ws.send('{"type":"register","address":"telemetryStreamEnded"}')
+            ws.send('{"type":"send", "address":"listTelemetryStreamSessions", "body":{},"replyAddress":"Pisa Merda"}')
+
+            ws.send('{"type":"register","address":"sensorData.' + event_id + '"}')
+            ws.send('{"type":"register","address":"event.' + event_id + '"}')
+            ws.send('{"type":"register","address":"alertmessage.' + event_id + '"}')
+            ws.send('{"type":"register","address":"alertmsgAck.' + event_id + '"}')
+            setInterval(function(){
+                ws.send('{"type": "ping"}')
+            }, 5000);
+        }
+      
+        ws.onmessage = function(event){
+            // console.log(event.data);
+
+            var response_data = JSON.parse(event.data)
+
+            if ('body' in  response_data && 'values' in response_data.body) {
+                if (response_data.body.status != undefined) {
+                    console.log(event.data)
+                    return
+                }
+                timestamp = new Date()
+                response_data.body.values.forEach(function(row) {
+                    name = row.name.toLowerCase()
+                    if (Object.keys(gauges).includes(name)) {
+                        gauges[name].gauge.value = row.value
+                    }
+                    if (Object.keys(charts).includes(name)) {
+                       charts[name].push([{
+                            time: (new Date).getTime()/1000,
+                            y: row.value,
+                        }]);
+                    }
+                })
+            }
+        }
+
+        ws.onclose = function(event){
+            console.log("Connection closed");
+        }
+    }
+
+    var header = {
+        view: function(vnode) {
+            return m('section.hero.is-warning',[
+                m('.hero-head',
+                    m('nav.navbar',
+                        m('.container',
+                            m('.navbar-brand',
+                                m('a.navbar-item[href=http://www.eteamsquadracorse.it/]',
+                                    m('img[src=logo.png]', {alt: 'E-Team'})
+                                )    
+                            )
+                        )
+                    )
+                ),
+                m('.hero-body',
+                    m('.container.has-text-centered',[
+                        m('h1.title', 'KeruBlast Real-Time Dashboard'),
+                        m('h2.subtitle', 'Made with ❤ by Giuseppe Fabiano')
+                    ])
+                ),
+            ])
+        }
+    }
+
+
+    var root = document.body
+    m.render(root,[
+        m(header),
+        m('section.section',
+            m('.container', [
+                m('section.columns.is-multiline', Object.keys(charts).map(
+                    function(name) {
+                        return m('.column.is-half',
+                            m('.box',[
+                                m('h2', name),
+                                m('.epoch', {
+                                    id: name + '-chart',
+                                    style: "height: 200px"
+                                })
+                            ])
+                        )
+                    })
+                ),
+                m('section.columns.is-multiline', Object.keys(gauges).map(
+                    function(name) {
+                        return m('.column.is-4',
+                            m('.box.has-text-centered', [
+                                m('canvas', {id: gauges[name].config.renderTo})
+                            ])
+                        )
+                    })
+                ),
+            ])
+        )
+    ])
+
+    Object.keys(gauges).forEach(key => {
+        gauges[key].gauge = new RadialGauge(gauges[key].config).draw()
+    })
+
+    Object.keys(charts).forEach(key => {
+        charts[key] = $('#' + key + '-chart').epoch({
+            type: 'time.line',
+            data:[  { label: 'Layer 1', values: []   }],
+            axes: ['left', 'bottom', 'right']
+        })
+    })
+
+    setInterval(function() {
+        charts.rpm.push([{
+            time: (new Date).getTime()/1000,
+            y: Math.random() * 10000
+        }]);
+        // charts.battery.push([{
+        //     time: (new Date).getTime()/1000,
+        //     y: Math.random() * 10000
+        // }]);
+        gauges.rpm.gauge.value = Math.random() * 10000
+     }, 1000);
+
+    connect_podium()   
+    </script>
+
+</body>
+</html>
