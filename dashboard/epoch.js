@@ -1632,17 +1632,6 @@ Epoch.Chart.Plot = (function(superClass) {
     return d3.svg.axis().scale(this.y(range)).orient('right').ticks(this.options.ticks.right).tickFormat(this.options.tickFormats.right);
   };
 
-  Plot.prototype.centerxAxis = function() {
-    var range;
-    range = this.options.range ? this.options.range.left : null;
-    return d3.svg.axis().scale(this.y(range)).orient('left').ticks(this.options.ticks.left).tickValues([]);
-  };
-  
-  Plot.prototype.circleAxis = function() {
-    
-  }
-  
-
   Plot.prototype.draw = function() {
     if (this._axesDrawn) {
       this._redrawAxes();
@@ -1683,7 +1672,7 @@ Epoch.Chart.Plot = (function(superClass) {
     if (this.hasAxis('right')) {
       this.g.append('g').attr('class', 'y axis right').attr('transform', "translate(" + (this.innerWidth()) + ", 0)").call(this.rightAxis());
     }
-    if (this.hasAxis('center')) {
+    if (this.hasAxis('gforce')) {
       //this.g.append("g").attr("class", "y axis").attr('transform', 'translate(' + (this.innerWidth()/2) + ', 0)').call(this.centerxAxis())
 
       this.g.append('circle')

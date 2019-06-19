@@ -245,7 +245,7 @@
                             m('h2', 'G'),
                             m('.epoch', {
                                 id: 'g-chart',
-                                style: 'max-width: 280px; height: 200px'
+                            
                             })
                         )
                     ])
@@ -280,7 +280,7 @@
         data: [{label: 'G', values: [
             {x: 0, y: 0, r: 6},
         ]}],
-        axes: ['top', 'left', 'bottom', 'right', 'center'],
+        axes: ['top', 'left', 'bottom', 'right', 'gforce'],
         range: [-2, 2],
         domain: [-2, 2],
         ticks: {
@@ -289,8 +289,8 @@
             bottom: 6,
             left: 6
         },
-        width: '200',
-        height: '200',
+        width: '250',
+        height: '250',
         margins: { top: 30, right: 30, bottom: 30, left: 30 }
     })
 
