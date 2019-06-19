@@ -213,7 +213,7 @@
                 m('.hero-body',
                     m('.container.has-text-centered',[
                         m('h1.title', 'KeruBlast Real-Time Dashboard'),
-                        m('h2.subtitle', 'Made with ❤ by Giuseppe Fabiano')
+                        m('h2.subtitle', 'Made with love by Giuseppe Fabiano')
                     ])
                 ),
             ])
@@ -229,7 +229,7 @@
                 m('section.columns.is-multiline', Object.keys(charts).map(
                     function(name) {
                         return m('.column.is-half',
-                            m('.box.has-text-centered',[
+                            m('.box.has-text-centered.epoch-theme-dark.has-background-grey-dark.has-text-light',[
                                 m('h2', name),
                                 m('.epoch', {
                                     id: name + '-chart',
@@ -240,7 +240,7 @@
                     })
                 ),
                 m('section.columns.is-multiline',
-                    m('.column.is-half', [
+                    m('.column.is-4', [
                         m('.box.has-text-centered',
                             m('h2', 'G'),
                             m('.epoch', {

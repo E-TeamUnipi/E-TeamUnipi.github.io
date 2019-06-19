@@ -1698,7 +1698,7 @@ Epoch.Chart.Plot = (function(superClass) {
         .style("fill", "none")
       this.g.append('circle')
         .attr("cx", this.innerWidth()/2)
-        .attr("cy", this.innerHeight()/2+1)
+        .attr("cy", this.innerHeight()/2)
         .attr("r", this.innerWidth()/2-1)
         .style("stroke", " #C70039")
         .style('stroke-width', 2)
