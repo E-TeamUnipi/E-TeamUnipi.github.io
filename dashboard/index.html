@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang='en'>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,7 +27,7 @@
 
     <script>
     var ws;
-    var event_id = 21438;
+    var event_id = 21453;
 
     var gauges = {
         'rpm': {
@@ -294,22 +294,22 @@
         margins: { top: 30, right: 30, bottom: 30, left: 30 }
     })
 
-    setInterval(function() {
-        charts.rpm.push([{
-            time: (new Date).getTime()/1000,
-            y: Math.random() * 10000
-        }]);
-        charts.battery.push([{
-            time: (new Date).getTime()/1000,
-            y: Math.random() * 10000
-        }]);
-        gauges.rpm.gauge.value = Math.random() * 10000
+    // setInterval(function() {
+    //     charts.rpm.push([{
+    //         time: (new Date).getTime()/1000,
+    //         y: Math.random() * 10000
+    //     }]);
+    //     charts.battery.push([{
+    //         time: (new Date).getTime()/1000,
+    //         y: Math.random() * 10000
+    //     }]);
+    //     gauges.rpm.gauge.value = Math.random() * 10000
 
-        G.update(
-            [{label: 'G', values: [
-            {x: Math.random()*4-2, y:Math.random()*4-2, r: 6}
-        ]}])
-     }, 1000);
+    //     G.update(
+    //         [{label: 'G', values: [
+    //         {x: Math.random()*4-2, y:Math.random()*4-2, r: 6}
+    //     ]}])
+    //  }, 1000);
 
     connect_podium()
     </script>
