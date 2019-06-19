@@ -1676,17 +1676,49 @@ Epoch.Chart.Plot = (function(superClass) {
       //this.g.append("g").attr("class", "y axis").attr('transform', 'translate(' + (this.innerWidth()/2) + ', 0)').call(this.centerxAxis())
 
       this.g.append('circle')
-        .attr("cx", this.innerWidth()/2)           // position the x-centre
-        .attr("cy", this.innerHeight()/2)           // position the y-centre
-        .attr("r", this.innerWidth()/4)             // set the radius
-        .style("stroke", "blue")    // set the line colour
-        .style("fill", "none");    // set the fill colour
+        .attr("cx", this.innerWidth()/2)
+        .attr("cy", this.innerHeight()/2)
+        .attr("r", this.innerWidth()/8)
+        .style("stroke", "green")
+        .style('stroke-width', 2)
+        .style("fill", "none")
       this.g.append('circle')
-        .attr("cx", this.innerWidth()/2)           // position the x-centre
-        .attr("cy", this.innerHeight()/2)           // position the y-centre
-        .attr("r", this.innerWidth()/2)             // set the radius
-        .style("stroke", "red")    // set the line colour
-        .style("fill", "none");    // set the fill colour 
+        .attr("cx", this.innerWidth()/2)
+        .attr("cy", this.innerHeight()/2)
+        .attr("r", this.innerWidth()/4)
+        .style("stroke", "#FFC300")
+        .style('stroke-width', 2)
+        .style("fill", "none")
+      this.g.append('circle')
+        .attr("cx", this.innerWidth()/2)
+        .attr("cy", this.innerHeight()/2)
+        .attr("r", 3*this.innerWidth()/8 )
+        .style("stroke", " #FF5733")
+        .style('stroke-width', 2)
+        .style("fill", "none")
+      this.g.append('circle')
+        .attr("cx", this.innerWidth()/2)
+        .attr("cy", this.innerHeight()/2+1)
+        .attr("r", this.innerWidth()/2-1)
+        .style("stroke", " #C70039")
+        .style('stroke-width', 2)
+        .style("fill", "none")
+
+      this.g.append('line')
+        .attr('x1', this.innerWidth()/2)
+        .attr('x2', this.innerWidth()/2)
+        .attr('y1', 0)
+        .attr('y2', this.innerHeight())
+        .style('stroke-width', 1)
+        .style('stroke', 'black')
+
+      this.g.append('line')
+        .attr('x1', 0)
+        .attr('x2', this.innerWidth())
+        .attr('y1', this.innerHeight()/2)
+        .attr('y2', this.innerHeight()/2)
+        .style('stroke-width', 1)
+        .style('stroke', 'black')
     }
     return this._axesDrawn = true;
   };
