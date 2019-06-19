@@ -26,7 +26,7 @@
 
     <script>
     var ws;
-    var event_id = 21430;
+    var event_id = 21438;
 
     var gauges = {
         'rpm': {
@@ -59,7 +59,7 @@
                 colorNeedleEnd: 'red',
                 valueBox: true,
                 animationRule: 'bounce',
-                animationDuration: 500
+                animationDuration: 50
             }
         },
         'speed': {
@@ -95,17 +95,17 @@
                 colorNeedleEnd: 'rgba(255, 160, 122, .9)',
                 valueBox: true,
                 animationRule: 'bounce',
-                animationDuration: 500
+                animationDuration: 50
             }
         },
-        'temp': {
+        'oiltemp': {
             gauge:null,
             config: {
                 renderTo: 'temp',
                 width: 250,
                 height: 250,
                 units: '°C',
-                title: 'Water Temp',
+                title: 'Oil Temp',
                 value: 0,
                 minValue: 0,
                 maxValue: 250,
@@ -130,7 +130,7 @@
                 colorNeedleEnd: 'red',
                 valueBox: true,
                 animationRule: 'bounce',
-                animationDuration: 500
+                animationDuration: 50
             }
         },
     }
@@ -139,6 +139,8 @@
         "rpm": null,
         "battery": null
     }
+
+    var G = null;
 
     function connect_podium() {
         if(ws !== undefined && ws.readyState !== ws.CLOSED){
@@ -163,7 +165,7 @@
         }
       
         ws.onmessage = function(event){
-            // console.log(event.data);
+            console.log(event.data);
 
             var response_data = JSON.parse(event.data)
 
@@ -172,7 +174,7 @@
                     console.log(event.data)
                     return
                 }
-                timestamp = new Date()
+                var timestamp = new Date()
                 response_data.body.values.forEach(function(row) {
                     name = row.name.toLowerCase()
                     if (Object.keys(gauges).includes(name)) {
@@ -236,6 +238,17 @@
                         )
                     })
                 ),
+                m('section.columns.is-multiline',
+                    m('.column.is-half', [
+                        m('.box',
+                            m('h2', 'G'),
+                            m('.epoch', {
+                                id: 'g-chart',
+                                style: 'width: 375px; height: 200px'
+                            })
+                        )
+                    ])
+                ),
                 m('section.columns.is-multiline', Object.keys(gauges).map(
                     function(name) {
                         return m('.column.is-4',
@@ -261,19 +274,35 @@
         })
     })
 
+    G = $('#g-chart').epoch({
+        type:  'scatter',
+        data: [{label: 'G', values: [
+            {x: -5.0, y: -5.0, r: 0},
+            {x: 5.0, y: 5.0, r: 0},
+        ]}],
+        axes: ['top', 'left', 'bottom', 'right'],
+    })
+
     setInterval(function() {
         charts.rpm.push([{
             time: (new Date).getTime()/1000,
             y: Math.random() * 10000
         }]);
-        // charts.battery.push([{
-        //     time: (new Date).getTime()/1000,
-        //     y: Math.random() * 10000
-        // }]);
+        charts.battery.push([{
+            time: (new Date).getTime()/1000,
+            y: Math.random() * 10000
+        }]);
         gauges.rpm.gauge.value = Math.random() * 10000
+
+        G.update(
+            [{label: 'G', values: [
+            {x: -5.0, y: -5.0, r: 0},
+            {x: 5.0, y: 5.0, r: 0},
+            {x: Math.random(), y:Math.random(), r: 15}
+        ]}])
      }, 1000);
 
-    connect_podium()   
+    connect_podium()
     </script>
 
 </body>
