@@ -228,7 +228,7 @@
                 m('section.columns.is-multiline', Object.keys(charts).map(
                     function(name) {
                         return m('.column.is-half',
-                            m('.box',[
+                            m('.box.has-text-centered',[
                                 m('h2', name),
                                 m('.epoch', {
                                     id: name + '-chart',
@@ -240,11 +240,11 @@
                 ),
                 m('section.columns.is-multiline',
                     m('.column.is-half', [
-                        m('.box',
+                        m('.box.has-text-centered',
                             m('h2', 'G'),
                             m('.epoch', {
                                 id: 'g-chart',
-                                style: 'width: 375px; height: 200px'
+                                style: 'max-width: 375px; height: 200px'
                             })
                         )
                     ])
@@ -277,10 +277,17 @@
     G = $('#g-chart').epoch({
         type:  'scatter',
         data: [{label: 'G', values: [
-            {x: -5.0, y: -5.0, r: 0},
-            {x: 5.0, y: 5.0, r: 0},
+            {x: 0, y: 0, r: 6},
         ]}],
         axes: ['top', 'left', 'bottom', 'right'],
+        range: [-2, 2],
+        domain: [-2, 2],
+        ticks: {
+            top: 6,
+            right: 6,
+            bottom: 6,
+            left: 6
+        }
     })
 
     setInterval(function() {
@@ -296,9 +303,7 @@
 
         G.update(
             [{label: 'G', values: [
-            {x: -5.0, y: -5.0, r: 0},
-            {x: 5.0, y: 5.0, r: 0},
-            {x: Math.random(), y:Math.random(), r: 15}
+            {x: Math.random()*2, y:Math.random()*2, r: 6}
         ]}])
      }, 1000);
 
