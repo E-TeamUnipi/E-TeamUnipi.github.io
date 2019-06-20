@@ -281,7 +281,7 @@
             type: 'time.line',
             data:[  { label: 'Layer 1', values: []   }],
             axes: ['left', 'bottom', 'right'],
-            margins: { top: 0, right: 30, bottom: 25, left: 30 }
+            margins: { top: 0, right: 35, bottom: 25, left: 35 }
         })
     })
 
@@ -304,22 +304,20 @@
         margins: { top: 30, right: 30, bottom: 30, left: 30 }
     })
 
-    // setInterval(function() {
-    //     charts.rpm.push([{
-    //         time: (new Date).getTime()/1000,
-    //         y: Math.random() * 10000
-    //     }]);
-    //     charts.battery.push([{
-    //         time: (new Date).getTime()/1000,
-    //         y: Math.random() * 10000
-    //     }]);
-    //     gauges.rpm.gauge.value = Math.random() * 10000
+    setInterval(function() {
+        Object.keys(charts).forEach(key => {
+            charts[key].push([{
+                time: (new Date).getTime()/1000,
+                y: Math.random() * 10000
+            }]);
+        })
+        gauges.rpm.gauge.value = Math.random() * 10000
 
-    //     G.update(
-    //         [{label: 'G', values: [
-    //         {x: Math.random()*4-2, y:Math.random()*4-2, r: 6}
-    //     ]}])
-    //  }, 1000);
+        G.update(
+            [{label: 'G', values: [
+            {x: Math.random()*4-2, y:Math.random()*4-2, r: 6}
+        ]}])
+     }, 1000);
 
     connect_podium()
     </script>
