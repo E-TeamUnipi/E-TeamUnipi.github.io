@@ -101,6 +101,41 @@
                 animationDuration: 50
             }
         },
+        'ect1': {
+            gauge:null,
+            config: {
+                renderTo: 'ect1',
+                width: 250,
+                height: 250,
+                units: '°C',
+                title: 'Water Temp',
+                value: 0,
+                minValue: 0,
+                maxValue: 250,
+                majorTicks: [
+                    '0','20','40','60','80','100','120','140','160','180','200','220', '240', '250'
+                ],
+                minorTicks: 2,
+                strokeTicks: true,
+                highlights: [
+                    { from: 0, to: 50, color: 'blue' },
+                    { from: 50, to: 100, color: 'rgba(0,0,255,.25)' },
+                    { from: 100, to: 180, color: 'rgba(255,30,0,.25)' },
+                    { from: 180, to: 250, color: 'red' },
+                ],
+                colorPlate: '#222',
+                colorMajorTicks: '#f5f5f5',
+                colorMinorTicks: '#ddd',
+                colorTitle: '#fff',
+                colorUnits: '#ccc',
+                colorNumbers: '#eee',
+                colorNeedle: 'red',
+                colorNeedleEnd: 'red',
+                valueBox: true,
+                animationRule: 'bounce',
+                animationDuration: 50
+            }
+        },
         'oiltemp': {
             gauge:null,
             config: {
