@@ -111,17 +111,17 @@
                 title: 'Water Temp',
                 value: 0,
                 minValue: 0,
-                maxValue: 250,
+                maxValue: 160,
                 majorTicks: [
-                    '0','20','40','60','80','100','120','140','160','180','200','220', '240', '250'
+                    '0','20','40','60','80','100','120','140', '160'
                 ],
                 minorTicks: 2,
                 strokeTicks: true,
                 highlights: [
                     { from: 0, to: 50, color: 'blue' },
                     { from: 50, to: 100, color: 'rgba(0,0,255,.25)' },
-                    { from: 100, to: 180, color: 'rgba(255,30,0,.25)' },
-                    { from: 180, to: 250, color: 'red' },
+                    { from: 100, to: 120, color: 'rgba(255,30,0,.25)' },
+                    { from: 120, to: 160, color: 'red' },
                 ],
                 colorPlate: '#222',
                 colorMajorTicks: '#f5f5f5',
@@ -146,17 +146,17 @@
                 title: 'Oil Temp',
                 value: 0,
                 minValue: 0,
-                maxValue: 250,
+                maxValue: 160,
                 majorTicks: [
-                    '0','20','40','60','80','100','120','140','160','180','200','220', '240', '250'
+                    '0','20','40','60','80','100','120','140', '160'
                 ],
                 minorTicks: 2,
                 strokeTicks: true,
                 highlights: [
                     { from: 0, to: 50, color: 'blue' },
                     { from: 50, to: 100, color: 'rgba(0,0,255,.25)' },
-                    { from: 100, to: 180, color: 'rgba(255,30,0,.25)' },
-                    { from: 180, to: 250, color: 'red' },
+                    { from: 100, to: 120, color: 'rgba(255,30,0,.25)' },
+                    { from: 110, to: 160, color: 'red' },
                 ],
                 colorPlate: '#222',
                 colorMajorTicks: '#f5f5f5',
@@ -173,11 +173,16 @@
         },
     }
 
-    var charts = {
+    var powertrain_charts = {
         'rpm': null,
-        'battery': null,
+        'ect1': null,
+        'eot': null,
         'oilpress': null,
-        'fuelpress': null,
+        'lambda': null,
+        'battery': null
+    }
+
+    var charts = {
     }
 
     var G = null;
@@ -217,6 +222,12 @@
                 var timestamp = new Date()
                 response_data.body.values.forEach(function(row) {
                     name = row.name.toLowerCase()
+                    if (Object.keys(powertrain_charts).includes(name)) {
+                        powertrain_charts[name].push([{
+                            time: (new Date).getTime()/1000,
+                            y: row.value, 
+                        }]);
+                    }
                     if (Object.keys(gauges).includes(name)) {
                         gauges[name].gauge.value = row.value
                     }
@@ -225,6 +236,10 @@
                             time: (new Date).getTime()/1000,
                             y: row.value,
                         }]);
+                    }
+
+                    if (name == 'gear') {
+                        $('#gear').html(row.value)
                     }
                 })
             }
@@ -270,14 +285,27 @@
         m(header),
         m('section.section',
             m('.container', [
+                m('section.columns.is-multiline', Object.keys(powertrain_charts).map(
+                    function(name) {
+                        return m('.column.is-half',
+                            m('.box.has-text-centered',[
+                                m('h2', name),
+                                m('.epoch', {
+                                    id: name + '-powertrain-chart',
+                                    style: "height: 200px"
+                                })
+                            ])
+                        )
+                    })
+                ),
                 m('section.columns.is-multiline', Object.keys(charts).map(
                     function(name) {
                         return m('.column.is-half',
-                            m('.box.has-text-centered.epoch-theme-dark.has-background-grey-dark.has-text-light',[
+                            m('.box.has-text-centered',[
                                 m('h2', name),
                                 m('.epoch', {
                                     id: name + '-chart',
-                                    style: "height: 200px"
+                                    style: 'height: 200px'
                                 })
                             ])
                         )
@@ -289,7 +317,14 @@
                             m('h2', 'G'),
                             m('.epoch', {
                                 id: 'g-chart',
-                            
+                            })
+                        )
+                    ]),
+                    m('.column.is-4', [
+                        m('.box.has-text-centered',
+                            m('h2', 'gear'),
+                            m('#gear', {
+                                style: 'height: 100%; font-size: 20rem'
                             })
                         )
                     ])
@@ -306,6 +341,15 @@
             ])
         )
     ])
+
+    Object.keys(powertrain_charts).forEach(key => {
+        powertrain_charts[key] = $('#' + key + '-powertrain-chart').epoch({
+            type: 'time.line',
+            data:[  { label: 'Layer 1', values: []   }],
+            axes: ['left', 'bottom', 'right'],
+            margins: { top: 0, right: 35, bottom: 25, left: 35 }
+        })
+    })
 
     Object.keys(gauges).forEach(key => {
         gauges[key].gauge = new RadialGauge(gauges[key].config).draw()
